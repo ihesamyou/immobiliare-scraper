@@ -6,12 +6,12 @@ import json
 
 
 class Immobiliare:
-    def __init__(self, url, get_data_of_following_pages=True) -> None:
+    def __init__(self, url, get_data_of_following_pages=False) -> None:
         self.url = url
         self.get_data_of_following_pages = get_data_of_following_pages
         self.response = requests.get(self.url)
         self._check_url()
-        self.gather_data()
+        self.json_data = self.gather_json_data()
 
     def __str__(self) -> str:
         return f"Immobiliare scraper - url='{self.url}'"
@@ -32,7 +32,7 @@ class Immobiliare:
         if self.response.status_code != 200:
             self.response.raise_for_status()
 
-    def gather_data(self):
+    def gather_json_data(self):
         self.real_estates = []
         self.last_scraped_url = self.url
 
@@ -40,7 +40,6 @@ class Immobiliare:
             parsed_url = urlparse(self.url)
             query_params = parse_qs(parsed_url.query)
             pag_value = int(query_params.get("pag", ["1"])[0])
-            print(pag_value)
             last_scraped_url = urlunparse((parsed_url.scheme, parsed_url.netloc,
                 parsed_url.path, parsed_url.params, urlencode(query_params, doseq=True),
                 parsed_url.fragment))
@@ -61,10 +60,6 @@ class Immobiliare:
         else:
             print(f"Getting real estate data of {self.url}")
             self.real_estates += self.filter_json_data(self.response)
-        
-        with open("output.json", "w") as file:
-            prettified_json = json.dumps(self.real_estates, indent=4)
-            file.write(prettified_json)
 
     def filter_json_data(self, response) -> dict:
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -123,6 +118,12 @@ class Immobiliare:
             real_estate["country"] = record["realEstate"]["properties"][0]["location"]["nation"]["id"]
             real_estates.append(real_estate)
         return real_estates
+    
+    def save_data_json(self) -> json:
+        with open("immobiliare.json", "w") as file:
+            prettified_json = json.dumps(self.real_estates, indent=4)
+            file.write(prettified_json)
 
 
-immo = Immobiliare(url="https://www.immobiliare.it/vendita-appartamenti/milano/?criterio=rilevanza&classeEnergetica=8&zoom=10", get_data_of_following_pages=True)
+immo = Immobiliare(url="https://www.immobiliare.it/affitto-case/milano/?criterio=rilevanza", get_data_of_following_pages=True)
+immo.save_data_json()
