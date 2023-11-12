@@ -21,11 +21,11 @@ class Immobiliare:
         if not is_immobiliare:
             raise ValueError(f"Given url must include 'https://www.immobiliare.it'.")
         
-        has_mapCenter_filter = self.url.find("mapCenter") == -1
+        has_mapCenter_filter = self.url.find("mapCenter") != -1
         if has_mapCenter_filter:
             raise ValueError(f"Given url must not include 'mapCenter' as it uses another api to retrieve data.")
         
-        has_search_list_filter = self.url.find("search-list") == -1
+        has_search_list_filter = self.url.find("search-list") != -1
         if has_search_list_filter:
             raise ValueError(f"Given url must not include 'search-list' as it uses another api to retrieve data.")
 
