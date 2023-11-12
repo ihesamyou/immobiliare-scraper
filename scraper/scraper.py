@@ -17,16 +17,13 @@ class Immobiliare:
         return f"Immobiliare scraper - url='{self.url}'"
 
     def _check_url(self) -> None:
-        is_immobiliare = self.url.find("https://www.immobiliare.it") != -1
-        if not is_immobiliare:
+        if not "https://www.immobiliare.it" in self.url:
             raise ValueError(f"Given url must include 'https://www.immobiliare.it'.")
-        
-        has_mapCenter_filter = self.url.find("mapCenter") != -1
-        if has_mapCenter_filter:
+
+        if "mapCenter" in self.url:
             raise ValueError(f"Given url must not include 'mapCenter' as it uses another api to retrieve data.")
-        
-        has_search_list_filter = self.url.find("search-list") != -1
-        if has_search_list_filter:
+
+        if "search-list" in self.url:
             raise ValueError(f"Given url must not include 'search-list' as it uses another api to retrieve data.")
 
         if self.response.status_code != 200:
@@ -87,7 +84,7 @@ class Immobiliare:
                 price_match = re.search(r'\d+\.?\d*', real_estate["formatted_price"])
                 if price_match:
                     real_estate["price"] = price_match.group(0).replace('.', '')
-            real_estate["bathrooms"] = record["realEstate"]["properties"][0].get("bathrooms")
+            real_estate["bathrooms"] = record["realEstate"]["properties"][0].get("bathrooms", None)
             real_estate["bedrooms"] = record["realEstate"]["properties"][0].get("bedRoomsNumber", None)
             floor_data = record["realEstate"]["properties"][0].get("floor", None)
             if floor_data:
@@ -121,8 +118,7 @@ class Immobiliare:
     
     def save_data_json(self) -> json:
         with open("immobiliare.json", "w") as file:
-            prettified_json = json.dumps(self.real_estates, indent=4)
-            file.write(prettified_json)
+            json.dump(self.real_estates, file, indent=4)
 
 
 immo = Immobiliare(url="https://www.immobiliare.it/affitto-case/milano/?criterio=rilevanza", get_data_of_following_pages=True)
