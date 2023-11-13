@@ -13,7 +13,7 @@ class Immobiliare:
         self.get_data_of_following_pages = get_data_of_following_pages
         self.response = requests.get(self.url)
         self._check_url()
-        self.json_data = self.gather_json_data()
+        self.gather_real_estate_data()
         self.data_frame = pd.DataFrame(self.real_estates)
 
     def __str__(self) -> str:
@@ -32,7 +32,7 @@ class Immobiliare:
         if self.response.status_code != 200:
             self.response.raise_for_status()
 
-    def gather_json_data(self) -> None:
+    def gather_real_estate_data(self) -> None:
         self.real_estates = []
         self.last_scraped_url = self.url
 
@@ -120,7 +120,7 @@ class Immobiliare:
             real_estate["country"] = record["realEstate"]["properties"][0]["location"]["nation"]["id"]
             real_estates.append(real_estate)
         return real_estates
-    
+
     def save_data_json(self, filename="immobiliare.json") -> None:
         with open(filename, "w") as file:
             json.dump(self.real_estates, file, indent=4)
@@ -134,8 +134,7 @@ class Immobiliare:
                 writer.writerow(real_estate)
 
 
-immo = Immobiliare(url="https://www.immobiliare.it/affitto-case/milano/?criterio=rilevanza", get_data_of_following_pages=True)
+immo = Immobiliare(url="https://www.immobiliare.it/affitto-case/milano/?criterio=rilevanza&pag=75", get_data_of_following_pages=True)
 immo.save_data_json()
 immo.save_data_csv()
 data = immo.data_frame
-print(data)
