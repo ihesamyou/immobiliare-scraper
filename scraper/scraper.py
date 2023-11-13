@@ -61,8 +61,11 @@ class Immobiliare:
 
     def filter_json_data(self, response) -> list:
         soup = BeautifulSoup(response.text, 'html.parser')
-        json_data = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)
-        json_data = json_data["props"]["pageProps"]["dehydratedState"]["queries"][0]["state"]["data"]["pages"][0]["results"]
+        try:
+            json_data = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)
+            json_data = json_data["props"]["pageProps"]["dehydratedState"]["queries"][0]["state"]["data"]["pages"][0]["results"]
+        except KeyError:
+            json_data = []
 
         real_estates = []
         if json_data:
