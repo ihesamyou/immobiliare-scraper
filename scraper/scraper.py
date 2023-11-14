@@ -14,9 +14,8 @@ class Immobiliare:
         self.get_data_of_following_pages = get_data_of_following_pages
         self.response = requests.get(self.url)
         self.last_response = self.response
-        self._check_url()
         self.real_estates = []
-        # self.gather_real_estate_data()
+        self.gather_real_estate_data()
         self.data_frame = pd.DataFrame(self.real_estates)
 
     def __str__(self) -> str:
@@ -36,6 +35,7 @@ class Immobiliare:
             self.response.raise_for_status()
 
     def gather_real_estate_data(self) -> None:
+        self._check_url()
         if self.get_data_of_following_pages:
             parsed_url = urlparse(self.url)
             query_params = parse_qs(parsed_url.query)
