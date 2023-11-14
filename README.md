@@ -5,7 +5,7 @@ With this scraper you can get the information of the listed real estates in json
 
 Simple usage:
 
-    pip install requirements.txt
+    pip install -r requirements.txt
     python3 scraper.py
 
 Code:
