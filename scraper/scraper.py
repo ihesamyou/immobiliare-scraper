@@ -16,7 +16,7 @@ class Immobiliare:
         self.last_response = self.response
         self._check_url()
         self.real_estates = []
-        self.gather_real_estate_data()
+        # self.gather_real_estate_data()
         self.data_frame = pd.DataFrame(self.real_estates)
 
     def __str__(self) -> str:
