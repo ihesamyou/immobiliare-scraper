@@ -63,7 +63,7 @@ class Immobiliare:
         soup = BeautifulSoup(response.text, 'html.parser')
         try:
             json_data = json.loads(soup.find("script", {"id": "__NEXT_DATA__"}).text)
-            json_data = json_data["props"]["pageProps"]["dehydratedState"]["queries"][0]["state"]["data"]["pages"][0]["results"]
+            json_data = json_data["props"]["pageProps"]["dehydratedState"]["queries"][0]["state"]["data"]["results"]
         except KeyError:
             json_data = []
 
@@ -98,7 +98,7 @@ class Immobiliare:
                 real_estate["total_floors"] = record["realEstate"]["properties"][0].get("floors", None)
                 real_estate["condition"] = record["realEstate"]["properties"][0].get("condition", None)
                 real_estate["rooms"] = record["realEstate"]["properties"][0].get("rooms", None)
-                real_estate["has_elevators"] = 1 if record["realEstate"]["properties"][0]["hasElevators"] else 0
+                real_estate["has_elevators"] = 1 if record["realEstate"]["properties"][0].get("hasElevators", None) else 0
                 real_estate["surface"] = None
                 real_estate["surface_formatted"] = record["realEstate"]["properties"][0].get("surface", None)
                 if real_estate["surface_formatted"]:
@@ -138,7 +138,8 @@ class Immobiliare:
                 writer.writerow(real_estate)
 
 
-immo = Immobiliare(url="https://www.immobiliare.it/affitto-case/milano/?criterio=rilevanza&pag=75", get_data_of_following_pages=True)
-immo.save_data_json()
-immo.save_data_csv()
-data = immo.data_frame
+if __name__ == '__main__':
+    immo = Immobiliare(url="https://www.immobiliare.it/affitto-case/milano/?criterio=rilevanza&pag=75", get_data_of_following_pages=True)
+    immo.save_data_json()
+    immo.save_data_csv()
+    data = immo.data_frame
